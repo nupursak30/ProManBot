@@ -1,0 +1,23 @@
+{
+  "name": "ProManBot",
+  "version": "1.0.0",
+  "description": "Bot to interact with Trello and handle operations such as manage todo list, generate report.",
+  "main": "slackBot.js",
+  "scripts": {
+    "start": "node ./slackBot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "botkit": "^0.5.8",
+    "moment": "^2.19.1",
+    "nock": "^9.0.22",
+    "pg": "^7.3.0",
+    "slackbots": "^0.5.1",
+    "randomstring": "^1.1.5"
+  },
+  "devDependencies": {
+    "supertest": "^3.0.0"
+  }
+}
