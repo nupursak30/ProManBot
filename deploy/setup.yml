@@ -1,0 +1,42 @@
+---
+- hosts: production
+  gather_facts: no
+  environment: 
+    PGHOST: "{{ lookup('ini', 'PGHOST section=production file=bot-config.ini') }}"
+    PORT_NO:  "{{ lookup('ini', 'PORT_NO section=production file=bot-config.ini') }}"
+    PGUSER: "{{ lookup('ini', 'PGUSER section=production file=bot-config.ini') }}"
+    PGDATABASE: "{{ lookup('ini', 'PGDATABASE section=production file=bot-config.ini') }}"
+    PROMANTOKEN: "{{ lookup('ini', 'PROMANTOKEN section=production file=bot-config.ini') }}"
+    SLACK_EMAIL_ID: "{{ lookup('ini', 'SLACK_EMAIL_ID section=production file=bot-config.ini') }}"
+    SLACK_PASSWORD: "{{ lookup('ini', 'SLACK_PASSWORD section=production file=bot-config.ini') }}"
+    MOCKON: "{{ lookup('ini', 'MOCKON section=production file=bot-config.ini') }}"
+    CLIENT_ID: "{{ lookup('ini', 'CLIENT_ID section=production file=bot-config.ini') }}"
+    CLIENT_SECRET: "{{ lookup('ini', 'CLIENT_SECRET section=production file=bot-config.ini') }}"
+    HOSTBASEURL: "{{ lookup('ini', 'HOSTBASEURL section=production file=bot-config.ini') }}"
+  tasks:
+  - name: nodejs setup
+    become: true
+    become_user: root
+    shell: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+  - name: install nodejs and npm
+    become: true
+    become_user: root
+    shell: apt-get install -y nodejs
+  - name: Install forever package using npm
+    npm:
+      name: forever
+      global: yes
+    become: true
+    become_user: root
+  - name: Copy source code on remote server
+    copy:
+      src: "{{playbook_dir}}/../src/"
+      dest: "/home/{{ansible_ssh_user}}/ProManBot"
+  - name: Install packages based on package.json.
+    npm:
+      path: "/home/{{ansible_ssh_user}}/ProManBot"
+    ignore_errors: yes 
+  - name: Run ProManBot
+    command: forever start -o /tmp/bot.log -e /tmp/bot.log slackBot.js
+    args:
+      chdir: "/home/{{ansible_ssh_user}}/ProManBot"
